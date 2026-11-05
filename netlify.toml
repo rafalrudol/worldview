@@ -1,0 +1,10 @@
+[build]
+command = "npm run check"
+publish = "dist"
+
+[build.environment]
+NODE_VERSION = "22"
+
+# No production deployment workflow. A human-approved Netlify draft may use
+# `netlify deploy --dir=dist` (without --prod). Set SITE_URL to its draft origin
+# and rebuild for absolute social-card URLs before uploading the final draft.
