@@ -1,0 +1,367 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Worldview reviewed public export 1.0.0",
+  "description": "Not a raw harness manifest. Explicit privacy, provider terms and IP review required before committing. Local cluster IDs are scoped to question + judgeRunId. PL and EN samples are independent, never translation pairs.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "publication",
+    "questions",
+    "models",
+    "runs",
+    "leaderboards"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "publication": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "simulated",
+        "reviewedAt",
+        "reviewer",
+        "privacy",
+        "providerTerms",
+        "rights",
+        "humanConsent",
+        "license"
+      ],
+      "properties": {
+        "status": { "const": "reviewed" },
+        "simulated": { "type": "boolean" },
+        "reviewedAt": { "type": "string", "format": "date-time" },
+        "reviewer": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "privacy": { "const": "redacted-and-reviewed" },
+        "providerTerms": { "enum": ["reviewed", "not-applicable-synthetic"] },
+        "rights": { "const": "cleared" },
+        "humanConsent": { "enum": ["obtained", "no-private-or-human-prompts"] },
+        "license": { "enum": ["MIT", "Apache-2.0"] }
+      },
+      "if": { "properties": { "simulated": { "const": false } } },
+      "then": { "properties": { "providerTerms": { "const": "reviewed" } } }
+    },
+    "questions": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1000,
+      "items": { "$ref": "#/$defs/question" }
+    },
+    "models": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 200,
+      "items": { "$ref": "#/$defs/model" }
+    },
+    "runs": {
+      "type": "array",
+      "maxItems": 100000,
+      "items": { "$ref": "#/$defs/run" }
+    },
+    "leaderboards": {
+      "type": "array",
+      "maxItems": 3,
+      "items": { "$ref": "#/$defs/board" }
+    }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{0,79}$" },
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 20000,
+      "pattern": "\\S"
+    },
+    "labels": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pl", "en"],
+      "properties": {
+        "pl": { "$ref": "#/$defs/text" },
+        "en": { "$ref": "#/$defs/text" }
+      }
+    },
+    "question": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "topic", "pl", "en", "refusalProne"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "topic": { "$ref": "#/$defs/id" },
+        "pl": { "$ref": "#/$defs/text" },
+        "en": { "$ref": "#/$defs/text" },
+        "refusalProne": { "type": "boolean" }
+      }
+    },
+    "model": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "kind"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "name": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "kind": { "enum": ["generative", "classifier"] }
+      }
+    },
+    "count": { "type": "integer", "minimum": 0, "maximum": 1000000 },
+    "estimate": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "denominator",
+        "method",
+        "uncertainty",
+        "provenance"
+      ],
+      "properties": {
+        "value": { "type": "number", "minimum": 0, "maximum": 1 },
+        "denominator": { "type": "integer", "minimum": 1 },
+        "method": { "$ref": "#/$defs/text" },
+        "provenance": { "$ref": "#/$defs/text" },
+        "uncertainty": {
+          "type": ["object", "null"],
+          "additionalProperties": false,
+          "required": ["low", "high", "level", "method"],
+          "properties": {
+            "low": { "type": "number", "minimum": 0, "maximum": 1 },
+            "high": { "type": "number", "minimum": 0, "maximum": 1 },
+            "level": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "exclusiveMaximum": 1
+            },
+            "method": { "$ref": "#/$defs/text" }
+          }
+        }
+      }
+    },
+    "sample": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repetition",
+        "startedAt",
+        "status",
+        "text",
+        "clusterId",
+        "refusal",
+        "hedging",
+        "moralising",
+        "finishReason",
+        "error",
+        "usage",
+        "latencyMs",
+        "actualModel",
+        "provider",
+        "cacheHit"
+      ],
+      "properties": {
+        "repetition": { "type": "integer", "minimum": 1, "maximum": 20 },
+        "startedAt": { "type": ["string", "null"], "format": "date-time" },
+        "status": { "enum": ["ok", "error"] },
+        "text": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 20000,
+          "pattern": "\\S"
+        },
+        "clusterId": {
+          "type": ["string", "null"],
+          "pattern": "^[a-z0-9][a-z0-9-]{0,79}$"
+        },
+        "refusal": {
+          "enum": [null, "none", "justified", "evasive", "unclear"]
+        },
+        "hedging": {
+          "enum": [null, "none", "warranted", "evasive", "unclear"]
+        },
+        "moralising": { "type": ["boolean", "null"] },
+        "finishReason": { "type": ["string", "null"], "maxLength": 100 },
+        "error": { "type": ["string", "null"], "maxLength": 1000 },
+        "actualModel": { "type": ["string", "null"], "maxLength": 200 },
+        "provider": { "type": ["string", "null"], "maxLength": 200 },
+        "cacheHit": { "type": ["boolean", "null"] },
+        "latencyMs": { "type": ["number", "null"], "minimum": 0 },
+        "usage": {
+          "type": ["object", "null"],
+          "additionalProperties": false,
+          "required": ["inputTokens", "outputTokens", "totalTokens"],
+          "properties": {
+            "inputTokens": { "type": ["integer", "null"], "minimum": 0 },
+            "outputTokens": { "type": ["integer", "null"], "minimum": 0 },
+            "totalTokens": { "type": ["integer", "null"], "minimum": 0 }
+          }
+        }
+      }
+    },
+    "run": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "questionId",
+        "modelId",
+        "modelVersion",
+        "taskVersion",
+        "taskSha256",
+        "sourceSha256",
+        "startedAt",
+        "judgeRunId",
+        "judgeProvenance",
+        "temperature",
+        "expectedPerLanguage",
+        "clusters",
+        "samples",
+        "metrics",
+        "cost"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "questionId": { "$ref": "#/$defs/id" },
+        "modelId": { "$ref": "#/$defs/id" },
+        "modelVersion": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "taskVersion": { "$ref": "#/$defs/id" },
+        "taskSha256": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["pl", "en"],
+          "properties": {
+            "pl": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+            "en": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" }
+          }
+        },
+        "sourceSha256": {
+          "type": ["string", "null"],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "startedAt": { "type": "string", "format": "date-time" },
+        "judgeRunId": {
+          "type": ["string", "null"],
+          "pattern": "^[a-z0-9][a-z0-9-]{0,79}$"
+        },
+        "judgeProvenance": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 20000,
+          "pattern": "\\S"
+        },
+        "temperature": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["requested", "actual", "defaultValue"],
+          "properties": {
+            "requested": { "const": "omitted/model default" },
+            "actual": { "type": ["number", "null"], "minimum": 0 },
+            "defaultValue": { "type": ["number", "null"], "minimum": 0 }
+          }
+        },
+        "expectedPerLanguage": { "const": 20 },
+        "clusters": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "label"],
+            "properties": {
+              "id": { "$ref": "#/$defs/id" },
+              "label": { "$ref": "#/$defs/labels" }
+            }
+          }
+        },
+        "samples": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["pl", "en"],
+          "properties": {
+            "pl": {
+              "type": "array",
+              "maxItems": 20,
+              "items": { "$ref": "#/$defs/sample" }
+            },
+            "en": {
+              "type": "array",
+              "maxItems": 20,
+              "items": { "$ref": "#/$defs/sample" }
+            }
+          }
+        },
+        "metrics": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["consistency", "evasiveness", "divergence", "drift"],
+          "properties": {
+            "consistency": { "$ref": "#/$defs/estimate" },
+            "evasiveness": { "$ref": "#/$defs/estimate" },
+            "divergence": { "$ref": "#/$defs/estimate" },
+            "drift": { "$ref": "#/$defs/estimate" }
+          }
+        },
+        "cost": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "knownSubtotalUsd",
+            "knownSamples",
+            "totalSamples",
+            "judgeUsd"
+          ],
+          "properties": {
+            "knownSubtotalUsd": { "type": ["number", "null"], "minimum": 0 },
+            "knownSamples": { "$ref": "#/$defs/count" },
+            "totalSamples": { "$ref": "#/$defs/count" },
+            "judgeUsd": { "type": ["number", "null"], "minimum": 0 }
+          }
+        }
+      }
+    },
+    "board": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "metric",
+        "taskVersion",
+        "questionIds",
+        "method",
+        "caveats",
+        "entries"
+      ],
+      "properties": {
+        "metric": { "enum": ["consistency", "evasiveness", "divergence"] },
+        "taskVersion": { "$ref": "#/$defs/id" },
+        "questionIds": {
+          "type": "array",
+          "minItems": 2,
+          "items": { "$ref": "#/$defs/id" }
+        },
+        "method": { "$ref": "#/$defs/labels" },
+        "caveats": { "$ref": "#/$defs/labels" },
+        "entries": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["modelId", "runIds", "tieGroup", "estimate"],
+            "properties": {
+              "modelId": { "$ref": "#/$defs/id" },
+              "runIds": {
+                "type": "array",
+                "minItems": 2,
+                "items": { "$ref": "#/$defs/id" }
+              },
+              "tieGroup": { "type": "integer", "minimum": 1 },
+              "estimate": { "$ref": "#/$defs/estimate" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

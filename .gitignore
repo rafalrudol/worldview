@@ -1,0 +1,5 @@
+dist/
+.amp/
+node_modules/
+*.local.json
+.env*

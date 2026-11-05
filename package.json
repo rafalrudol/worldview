@@ -1,0 +1,15 @@
+{
+  "name": "worldview-results",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "node src/build.mjs",
+    "test": "node --test test/*.test.mjs",
+    "check": "npm test && npm run build"
+  }
+}

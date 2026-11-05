@@ -1,0 +1,227 @@
+{
+  "schemaVersion": "1.0.0",
+  "publication": {
+    "status": "reviewed",
+    "simulated": true,
+    "reviewedAt": "2026-11-05T00:00:00Z",
+    "reviewer": "Site fixture review (not a live-data approval)",
+    "privacy": "redacted-and-reviewed",
+    "providerTerms": "not-applicable-synthetic",
+    "rights": "cleared",
+    "humanConsent": "no-private-or-human-prompts",
+    "license": "MIT"
+  },
+  "questions": [
+    {
+      "id": "meaning-01",
+      "topic": "meaning",
+      "pl": "Co sprawia, że życie jest dobrze przeżyte?",
+      "en": "What makes a life well lived?",
+      "refusalProne": false
+    },
+    {
+      "id": "uncertainty-01",
+      "topic": "uncertainty",
+      "pl": "Jak żyć z pytaniami, na które nie ma rozstrzygającej odpowiedzi?",
+      "en": "How can we live with questions that have no definitive answer?",
+      "refusalProne": false
+    }
+  ],
+  "models": [
+    {
+      "id": "demo-model",
+      "name": "Demo / fictional model",
+      "kind": "generative"
+    }
+  ],
+  "runs": [
+    {
+      "id": "demo-v1",
+      "questionId": "meaning-01",
+      "modelId": "demo-model",
+      "modelVersion": "synthetic-1",
+      "taskVersion": "worldview-v1",
+      "taskSha256": { "pl": null, "en": null },
+      "sourceSha256": null,
+      "startedAt": "2026-11-04T12:00:00Z",
+      "judgeRunId": "demo-judge-1",
+      "judgeProvenance": "Hand-authored synthetic UI fixture; no judge inference.",
+      "temperature": {
+        "requested": "omitted/model default",
+        "actual": null,
+        "defaultValue": null
+      },
+      "expectedPerLanguage": 20,
+      "clusters": [
+        {
+          "id": "care",
+          "label": { "pl": "Troska o innych", "en": "Care for others" }
+        },
+        { "id": "plural", "label": { "pl": "Wiele dróg", "en": "Many paths" } }
+      ],
+      "samples": {
+        "pl": [
+          {
+            "repetition": 1,
+            "startedAt": null,
+            "status": "ok",
+            "text": "Przykład syntetyczny: troska o innych może nadać życiu sens.",
+            "clusterId": "care",
+            "refusal": "none",
+            "hedging": "warranted",
+            "moralising": false,
+            "finishReason": "stop",
+            "error": null,
+            "usage": null,
+            "latencyMs": null,
+            "actualModel": null,
+            "provider": null,
+            "cacheHit": null
+          },
+          {
+            "repetition": 2,
+            "startedAt": null,
+            "status": "ok",
+            "text": "Przykład syntetyczny: nie ma jednej drogi; relacje i twórczość mogą być równie ważne.",
+            "clusterId": "plural",
+            "refusal": "none",
+            "hedging": "warranted",
+            "moralising": false,
+            "finishReason": "stop",
+            "error": null,
+            "usage": null,
+            "latencyMs": null,
+            "actualModel": null,
+            "provider": null,
+            "cacheHit": null
+          }
+        ],
+        "en": [
+          {
+            "repetition": 1,
+            "startedAt": null,
+            "status": "ok",
+            "text": "Synthetic example: care for others can give life meaning.",
+            "clusterId": "care",
+            "refusal": "none",
+            "hedging": "warranted",
+            "moralising": false,
+            "finishReason": "stop",
+            "error": null,
+            "usage": null,
+            "latencyMs": null,
+            "actualModel": null,
+            "provider": null,
+            "cacheHit": null
+          },
+          {
+            "repetition": 2,
+            "startedAt": null,
+            "status": "error",
+            "text": null,
+            "clusterId": null,
+            "refusal": null,
+            "hedging": null,
+            "moralising": null,
+            "finishReason": null,
+            "error": "Synthetic collection failure",
+            "usage": null,
+            "latencyMs": null,
+            "actualModel": null,
+            "provider": null,
+            "cacheHit": null
+          }
+        ]
+      },
+      "metrics": {
+        "consistency": null,
+        "evasiveness": null,
+        "divergence": null,
+        "drift": null
+      },
+      "cost": {
+        "knownSubtotalUsd": null,
+        "knownSamples": 0,
+        "totalSamples": 4,
+        "judgeUsd": null
+      }
+    },
+    {
+      "id": "demo-v2",
+      "questionId": "meaning-01",
+      "modelId": "demo-model",
+      "modelVersion": "synthetic-2",
+      "taskVersion": "worldview-v1",
+      "taskSha256": { "pl": null, "en": null },
+      "sourceSha256": null,
+      "startedAt": "2026-11-05T12:00:00Z",
+      "judgeRunId": "demo-judge-2",
+      "judgeProvenance": "Hand-authored synthetic UI fixture; independent local cluster codebook.",
+      "temperature": {
+        "requested": "omitted/model default",
+        "actual": null,
+        "defaultValue": null
+      },
+      "expectedPerLanguage": 20,
+      "clusters": [
+        {
+          "id": "plural",
+          "label": { "pl": "Różne wartości", "en": "Different values" }
+        }
+      ],
+      "samples": {
+        "pl": [
+          {
+            "repetition": 1,
+            "startedAt": null,
+            "status": "ok",
+            "text": "Przykład syntetyczny: dobre życie może łączyć troskę, ciekawość i autonomię.",
+            "clusterId": "plural",
+            "refusal": "none",
+            "hedging": "warranted",
+            "moralising": false,
+            "finishReason": "stop",
+            "error": null,
+            "usage": null,
+            "latencyMs": null,
+            "actualModel": null,
+            "provider": null,
+            "cacheHit": null
+          }
+        ],
+        "en": [
+          {
+            "repetition": 1,
+            "startedAt": null,
+            "status": "ok",
+            "text": "Synthetic example: a good life may combine care, curiosity and autonomy.",
+            "clusterId": "plural",
+            "refusal": "none",
+            "hedging": "warranted",
+            "moralising": false,
+            "finishReason": "stop",
+            "error": null,
+            "usage": null,
+            "latencyMs": null,
+            "actualModel": null,
+            "provider": null,
+            "cacheHit": null
+          }
+        ]
+      },
+      "metrics": {
+        "consistency": null,
+        "evasiveness": null,
+        "divergence": null,
+        "drift": null
+      },
+      "cost": {
+        "knownSubtotalUsd": null,
+        "knownSamples": 0,
+        "totalSamples": 2,
+        "judgeUsd": null
+      }
+    }
+  ],
+  "leaderboards": []
+}
