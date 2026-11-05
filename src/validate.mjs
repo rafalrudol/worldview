@@ -149,6 +149,7 @@ export function validate(data) {
   if (data.publication.simulated && data.leaderboards.length)
     fail("leaderboards", "synthetic rankings prohibited");
   for (const r of data.runs) {
+    if (r.id === "main") fail(r.id, "reserved page anchor");
     if (
       !data.questions.some((q) => q.id === r.questionId) ||
       !data.models.some((m) => m.id === r.modelId)
@@ -196,6 +197,8 @@ export function validate(data) {
             s.moralising !== null)
         )
           fail(r.id, "errors cannot be annotated answers");
+        if (s.status === "ok" && !s.text?.trim())
+          fail(r.id, "successful answers require nonblank text");
         if (
           s.clusterId !== null &&
           (s.text === null ||
@@ -251,9 +254,15 @@ export function validate(data) {
     )) {
       if (
         JSON.stringify(
-          [...other.clusters].sort((a, b) => a.id.localeCompare(b.id)),
+          [...other.clusters]
+            .sort((a, b) => a.id.localeCompare(b.id))
+            .map((c) => [c.id, c.label.pl, c.label.en]),
         ) !==
-        JSON.stringify([...r.clusters].sort((a, b) => a.id.localeCompare(b.id)))
+        JSON.stringify(
+          [...r.clusters]
+            .sort((a, b) => a.id.localeCompare(b.id))
+            .map((c) => [c.id, c.label.pl, c.label.en]),
+        )
       )
         fail(r.id, "conflicting shared cluster codebook");
     }

@@ -161,7 +161,12 @@
         "repetition": { "type": "integer", "minimum": 1, "maximum": 20 },
         "startedAt": { "type": ["string", "null"], "format": "date-time" },
         "status": { "enum": ["ok", "error"] },
-        "text": { "type": ["string", "null"], "maxLength": 20000 },
+        "text": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 20000,
+          "pattern": "\\S"
+        },
         "clusterId": {
           "type": ["string", "null"],
           "pattern": "^[a-z0-9][a-z0-9-]{0,79}$"

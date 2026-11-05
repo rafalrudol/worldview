@@ -31,6 +31,7 @@ test("review boundary rejects private fields, wrong versions, missing consent an
     (d) => (d.questions[0].id = "../escape"),
     (d) => (d.runs[0].samples.pl[0].usage = { raw: {} }),
     (d) => (d.runs[0].startedAt = "yesterday"),
+    (d) => (d.runs[0].id = "main"),
     (d) => (d.questions[0].pl = " "),
     (d) => (d.runs[0].clusters[0].label.en = ""),
   ]) {
@@ -113,6 +114,19 @@ test("history is chronological, links every run, and avoids bogus cluster or dri
   assert.match(html, /Change in attempts PL \/ EN: -1 \/ -1/);
   assert.match(html, /Temporal drift: not computed/);
   assert.match(html, /not compared across independent judge runs/);
+  d.runs[0].startedAt = "2026-11-05T01:00:00Z";
+  d.runs[1].startedAt = "2026-11-05T02:00:00+02:00";
+  validate(d);
+  const timezoneHistory = model(d, d.models[0], "en");
+  assert.ok(
+    timezoneHistory.indexOf("#demo-v2") < timezoneHistory.indexOf("#demo-v1"),
+  );
+  assert.match(timezoneHistory, /synthetic-2 → synthetic-1/);
+  const timezoneQuestion = question(d, d.questions[0], "en");
+  assert.ok(
+    timezoneQuestion.indexOf('id="demo-v1"') <
+      timezoneQuestion.indexOf('id="demo-v2"'),
+  );
 });
 
 test("all untrusted text is escaped in content, metadata and Markdown", () => {
@@ -181,6 +195,9 @@ function reviewedRanking() {
 
 test("reviewed leaderboards show intervals, ties and caveats; synthetic/incomplete/classifier rankings fail closed", () => {
   const d = reviewedRanking();
+  d.runs[2].clusters = d.runs[2].clusters
+    .reverse()
+    .map((c) => ({ label: { en: c.label.en, pl: c.label.pl }, id: c.id }));
   validate(d);
   const html = boards(d, "en");
   assert.match(html, /0.2–0.8/);
@@ -198,6 +215,11 @@ test("reviewed leaderboards show intervals, ties and caveats; synthetic/incomple
     (x) => (x.runs[0].samples.pl[0].startedAt = null),
     (x) => (x.leaderboards[0].entries[0].estimate.denominator = 40),
     (x) => (x.leaderboards[0].entries[0].estimate.uncertainty.method = " "),
+    (x) => {
+      for (const r of x.runs)
+        for (const s of [...r.samples.pl, ...r.samples.en]) s.text = " \n\t";
+    },
+    (x) => (x.runs[0].samples.pl[0].text = null),
   ]) {
     const bad = structuredClone(d);
     edit(bad);

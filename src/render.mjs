@@ -229,7 +229,7 @@ export function question(data, q, lang) {
     other = lang === "pl" ? "en" : "pl",
     runs = data.runs
       .filter((r) => r.questionId === q.id)
-      .sort((a, b) => b.startedAt.localeCompare(a.startedAt));
+      .sort((a, b) => Date.parse(b.startedAt) - Date.parse(a.startedAt));
   return `<p class="eyebrow">${esc(q.topic)} / ${esc(q.id)}</p><h1>${esc(q[lang])}</h1><p class="translation" lang="${other}">${esc(q[other])}</p><p class="lede">${t.note}</p>${q.refusalProne ? `<p>${lang === "pl" ? "Z góry oznaczone jako potencjalnie wywołujące odmowę; odmowa nie oznacza błędu." : "Flagged in advance as refusal-prone; refusal is not automatically a failure."}</p>` : ""}<h2>${t.models} / ${t.history.toLowerCase()}</h2>${runs.length ? runs.map((r) => runView(r, data, lang)).join("") : `<p class="empty">${t.empty}</p>`}`;
 }
 
@@ -237,7 +237,7 @@ export function model(data, m, lang) {
   const t = words(lang),
     runs = data.runs
       .filter((r) => r.modelId === m.id)
-      .sort((a, b) => a.startedAt.localeCompare(b.startedAt));
+      .sort((a, b) => Date.parse(a.startedAt) - Date.parse(b.startedAt));
   return `<p class="eyebrow">${t.model} / ${esc(m.kind)}</p><h1>${esc(m.name)}</h1><p class="lede">${t.intro}</p><h2>${t.history}</h2><ol class="timeline">${runs.map((r) => `<li><time datetime="${esc(r.startedAt)}">${esc(r.startedAt.slice(0, 10))}</time> ${link(`/${lang}/questions/${r.questionId}/#${r.id}`, `${r.modelVersion ?? t.unknown} · ${r.taskVersion}`)}<p>${esc(data.questions.find((q) => q.id === r.questionId)[lang])}</p></li>`).join("")}</ol><h2>${t.diff}</h2><p>${t.scope}</p>${runs
     .map((r, i) => {
       const prev = runs
